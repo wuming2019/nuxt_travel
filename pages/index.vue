@@ -143,6 +143,7 @@ export default {
         margin-right: 8px;
         cursor: pointer;
         i {
+          font-style: normal;
           position: absolute;
           z-index: 2;
           display: block;
