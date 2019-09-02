@@ -19,7 +19,10 @@
       <div class="search-bar">
         <!-- tab栏 -->
         <el-row type="flex" class="search-tab">
-          <span v-for="(item, index) in options" :key="index" @click="handleClick(index)">
+          <span v-for="(item, index) in options" 
+          :key="index" 
+          @click="handleClick(index)"
+          :class="{active: current === index}">
             <i>{{item.title}}</i>
           </span>
         </el-row>
@@ -68,6 +71,13 @@ export default {
   methods: {
     // 点击搜索的tab栏时触发
     handleClick(index) {
+      // 点击索引是2的时候触发,代表点击的是机票
+      if(index === 2){
+        // 路由规则虽然pages可以直接访问，不需要配置
+        // 但是可以通用路由的方法
+        this.$router.push("/air")
+      }
+
       // 把当前点击的索引赋值给current
       this.current = index;
     }
