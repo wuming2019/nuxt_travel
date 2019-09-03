@@ -1,11 +1,11 @@
 <template>
   <el-form :model="form" ref="form" :rules="rules" class="form">
-    <el-form-item class="form-item">
-      <el-input placeholder="用户名/手机"></el-input>
+    <el-form-item class="form-item" prop="username">
+      <el-input v-model="form.username" placeholder="用户名/手机"></el-input>
     </el-form-item>
 
-    <el-form-item class="form-item">
-      <el-input placeholder="密码" type="password"></el-input>
+    <el-form-item class="form-item" prop="password">
+      <el-input v-model="form.password" placeholder="密码" type="password"></el-input>
     </el-form-item>
 
     <p class="form-text">
@@ -25,15 +25,40 @@ export default {
     data () {
         return {
             // 表单数据
-            form: {},
+            form: {
+              username:'',
+              password:''
+            },
             // 表单验证规则 
-            rules: {}
+            rules: {
+              username: [
+                { required: true, message: '请输入用户名', trigger: 'blur' }
+              ],
+              password: [
+                { required: true, message: '请输入密码', trigger: 'blur' }
+              ]
+            }
         }
     },
     methods: {
         // 提交登陆
         handleLoginSubmit(){
             console.log(this.form)
+            this.$refs.form.validate(valid => {
+              if(valid){
+                // 请求登陆接口
+                this.$axios({
+                  url: '/accounts/login',
+                  method: 'POST',
+                  data: this.form
+                }).then(res=>{
+                  console.log(res)
+                })
+              }else{
+                console.log('验证失败')
+                return false
+              }
+            })
         }
     }
 }
