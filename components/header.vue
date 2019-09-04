@@ -17,8 +17,11 @@
       </el-row>
 
       <!-- 登陆/用户信息 -->
-      <div>
+      <div v-if="!$store.state.user.userInfo.token">
         <nuxt-link to="/user/login">登录 / 注册</nuxt-link>
+      </div>
+      <div v-else>
+        {{$store.state.user.userInfo.user.nickname}}
       </div>
     </el-row>
   </div>
@@ -26,6 +29,7 @@
 
 <script>
 export default {
+  // 组件加载
 	mounted(){
     console.log(this.$store.state.user.userInfo.token)
   }
