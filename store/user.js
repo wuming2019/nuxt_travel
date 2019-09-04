@@ -4,7 +4,6 @@
 // 用户管理
 export const state = {
     userInfo: {
-        token:"123456",
         token:"",
         user: {}
     }
@@ -16,5 +15,13 @@ export const mutations = {
     setUserInfo(state, data){
     // data是后台返回的用户信息
     state.userInfo = data
+    },
+    // 清空userInfo
+    clearUserInfo(state){
+        state.userInfo = {
+            token:"",
+            user: {}
+        }
     }
-}    
+}
+
