@@ -7,6 +7,7 @@
     <el-form-item class="form-item" prop="captcha">
       <el-input placeholder="验证码" v-model="form.captcha">
         <template slot="append">
+          <!-- 内部实现了调用 this.$emit("click") 触发传递的方法 -->
           <el-button @click="handleSendCaptcha">发送验证码</el-button>
         </template>
       </el-input>
@@ -66,7 +67,49 @@ export default {
     methods: {
         // 发送验证码
         handleSendCaptcha(){
-            console.log(this.form)
+            // console.log(this.form)
+            // 判断如果手机号码是空，不请求
+            if(!this.form.username){
+                this.$message.error('请输入手机号码')
+                return
+            }
+            // 发送验证码
+            this.$axios({
+                url: "/captchas",
+                method: "POST",
+                data: {
+                    tel: this.form.username // 手机号码
+                }
+            }).then(res => {
+                // 解构出code属性
+                const {code} = res.data
+                this.$alert(`模拟手机验证码是：${code}`, "提示")
+                // 类似于
+                // this.$message({
+                //     type:"success",
+                //     message: `模拟手机验证码是：${code}`
+                // })
+            })
+        },
+        handleRegSubmit() {
+            // console.log(this.form)
+            this.$refs.form.validate(valid => {
+                if(valid){
+                    // 可以使用...+变量名会指向剩余的属性
+                    const {checkPassword, ...rest} = this.form
+
+                    // 调用注册接口
+                    this.$axios({
+                        url: '/accounts/register',
+                        method: 'POST',
+                        data: rest
+                    }).then(res => {
+                        // 注册成功后帮用户自动登录
+                        // commit接受两个参数，第一个mutations参数是方法名，第二个参数数据
+                        this.$store.commit("user/setUserInfo", res.data)
+                    })
+                }
+            })
         }
     },
 }
