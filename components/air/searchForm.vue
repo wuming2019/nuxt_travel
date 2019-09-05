@@ -6,7 +6,7 @@
             <span 
             v-for="(item, index) in tabs" 
             :key="index"
-            @click="handleSearchTab(item, index)"
+            @click="handleSearchTab(index)"
             :class="{active: index === currentTab}">
                 <i :class="item.icon"></i>{{item.name}}
             </span>
@@ -90,8 +90,10 @@ export default {
     },
     methods: {
         // tab切换时触发
-        handleSearchTab(item, index){
-            
+        handleSearchTab(index){
+            if(index===1){
+              this.$alert('目前暂时不支持往返','提示')
+            }
         },
         
         // 出发城市的搜索建议的事件
@@ -190,11 +192,40 @@ export default {
         },
         // 触发和目标城市切换时触发
         handleReverse(){
-            
+            // 交叉赋值
+            this.form.departCity = destCity
+            this.form.departCode = destCode
+
+            this.form.destCity = departCity
+            this.form.destCode = departCode
         },
         // 提交表单是触发
         handleSubmit(){
           //  console.log(this.form)
+          const {departCity,destCity,departDate} = this.form
+
+          // 判断输入框是否为空
+          if(!departCity){
+            this.$alert('出发城市不能为空','提示')
+            return
+          }
+
+          if(!destCity){
+            this.$alert('到达城市不能为空','提示')
+            return
+          }
+
+          if(!departDate){
+            this.$alert('出发日期不能为空','提示')
+            return
+          }
+
+          // 跳转到机票列表页  /air/flights
+          this.$router.push({
+            path: '/air/flights',
+            // url携带的参数
+            query: this.form
+          })
         }
     },
     mounted() {
