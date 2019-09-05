@@ -49,11 +49,11 @@
 
 <script>
 // 导入搜索栏组件
-import searchForm from '@/components/air/searchForm'
+import SearchForm from '@/components/air/searchForm'
 
 export default {
   components: {
-    searchForm
+    SearchForm
   }
 }
 </script>

@@ -16,8 +16,6 @@
         <el-form class="search-form-content" ref="form" label-width="80px">
 
             <el-form-item label="出发城市">
-
-
                 <!-- 文档地址：https://element.eleme.cn/#/zh-CN/component/input#yuan-cheng-sou-suo -->
 
                 <!-- fetch-suggestions: 获取搜索建议，并且显示在输入框的下拉框中 -->
@@ -28,13 +26,13 @@
                 placeholder="请搜索出发城市"
                 @select="handleDepartSelect"
                 class="el-autocomplete"
+                v-model="form.departCity"
                 ></el-autocomplete>
-
-
-
             </el-form-item>
 
             <el-form-item label="到达城市">
+                <!-- fetch-suggestions: 每次输入时候都会执行，获取搜索建议，并且显示在输入框的下拉框中 -->
+                <!-- select：在下拉框中选中时候时候触发的事件 -->
                 <el-autocomplete
                 :fetch-suggestions="queryDestSearch"
                 placeholder="请搜索到达城市"
@@ -42,14 +40,17 @@
                 class="el-autocomplete"
                 ></el-autocomplete>
             </el-form-item>
+
             <el-form-item label="出发时间">
                 <!-- change 用户确认选择日期时触发 -->
-                <el-date-picker type="date" 
+                <el-date-picker 
+                type="date" 
                 placeholder="请选择日期" 
                 style="width: 100%;"
                 @change="handleDate">
                 </el-date-picker>
             </el-form-item>
+
             <el-form-item label="">
                 <el-button style="width:100%;" 
                 type="primary" 
@@ -74,6 +75,13 @@ export default {
                 {icon: "iconfont iconshuangxiang", name: "往返"}
             ],
             currentTab: 0,
+            form: {
+                departCity: "", // 出发城市
+                departCode: "", // 出发城市代码
+                destCity: "", //目标城市
+                destCode: "", //目标城市代码
+                departDate: "" //出发日期
+            }
         }
     },
     methods: {
@@ -83,30 +91,56 @@ export default {
         },
         
         // 出发城市的搜索建议的事件
+        // value是输入框的值
+        // cb是一个回调函数必须要调用，参数的值会显示在下拉框中
+        // cb调用时候必须要接受一个数组，数组中的元素必须是一个对象，对象中必须有value属性
         queryDepartSearch(value, cb){
-            
+          if(!value){
+            return
+          }
+          // 根据用户的输入请求实时机票城市
+          this.$axios({
+            url: '/airs/city',
+            // get参数
+            params: {
+              // 输入框的关键字
+              name: value
+            }
+          }).then(res => {
+            // 数组
+            const {data} = res.data
+            // 给数组中每个对象添加value属性
+            const newDate = []
+            data.forEach(v => {
+              // 前进value属性
+              v.value = v.name.replace('市','')
+              // 把带有value属性的对象添加到新数组中
+              newDate.push(v)
+            })
+            // 显示到下拉列表中
+            cb(newDate)
+          })
         },
         // 目标城市输入框获得焦点时触发
         // value 是选中的值，cb是回调函数，接收要展示的列表
         queryDestSearch(value, cb){
-            cb([
-                {value: 1},
-                {value: 2},
-                {value: 3},
-            ]);
+
         },
        
         // 出发城市下拉选择时触发
+        // 事件的文档地址：https://element.eleme.cn/#/zh-CN/component/input#autocomplete-events
+        // item是当然选中的对象
         handleDepartSelect(item) {
-            
+            console.log(item)
         },
         // 目标城市下拉选择时触发
         handleDestSelect(item) {
             
         },
         // 确认选择日期时触发
+        // value会返回当前选中的日期
         handleDate(value){
-           
+           console.log(value)
         },
         // 触发和目标城市切换时触发
         handleReverse(){
@@ -114,7 +148,7 @@ export default {
         },
         // 提交表单是触发
         handleSubmit(){
-           
+          //  console.log(this.form)
         }
     },
     mounted() {
