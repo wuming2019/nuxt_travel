@@ -43,7 +43,8 @@ export default {
     methods: {
         // 提交登陆
         handleLoginSubmit(){
-            console.log(this.form)
+            // console.log(this.form)
+            // console.log(this)
             this.$refs.form.validate(valid => {
               if(valid){
                 // 请求登陆接口
@@ -52,10 +53,12 @@ export default {
                   method: 'POST',
                   data: this.form
                 }).then(res=>{
-                  console.log(res)
-                  // 如何调用mutation下的setUserInfo方法 commit
+                  // console.log(res)
+                  // 如何调用mutation下的setUserInfo方
                   // commit接受两个参数，第一个是方法名，第二个是参数数据
                   this.$store.commit('user/setUserInfo',res.data)
+                  this.$message('登陆成功，正在跳转')
+                  this.$router.push('/')
                 })
               }else{
                 console.log('验证失败')
