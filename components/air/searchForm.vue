@@ -213,6 +213,11 @@ export default {
         // 触发和目标城市切换时触发
         handleReverse(){
             // 交叉赋值
+            const destCity = this.form.destCity
+            const destCode = this.form.destCode
+            const departCity = this.form.departCity
+            const departCode = this.form.departCode
+
             this.form.departCity = destCity
             this.form.departCode = destCode
 

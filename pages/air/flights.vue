@@ -17,6 +17,22 @@
           :key="index"
           :data="item">
 
+          <!-- 分页 -->
+          <!-- size-change：每页条数切换时候触发 -->
+          <!-- current-change：页码切换时候触发 -->
+          <!-- current-page: 当前的页码 -->
+          <!-- page-size: 当前显示的条数 -->
+          <!-- total: 总条数 -->
+          <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="pageIndex"
+            :page-sizes="[5, 10, 15, 20]"
+            :page-size="pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="total">
+          </el-pagination>
+
           </FlightsItem>
         </div>
       </div>
@@ -38,7 +54,10 @@ export default {
   data () {
     return {
           // 机票列表返回的总数据，总数据包含4个属性，flights/info/options/tatol
-          flightsData: {}
+          flightsData: {},
+          pageIndex:1, // 当前的页码
+          pageSize: 5, // 当前的条数
+          total: 0     // 总条数
     }
   },
 
@@ -57,6 +76,15 @@ export default {
       // 赋值给总数据
       this.flightsData = res.data
     })
+  },
+
+  methods: {
+    // 每页条数切换时候触发
+    handleSizeChange(){
+    },
+    // 页码切换时候触发
+    handleCurrentChange(){
+    }
   }
 }
 </script>
