@@ -25,6 +25,7 @@
                 :fetch-suggestions="queryDepartSearch"
                 placeholder="请搜索出发城市"
                 @select="handleDepartSelect"
+                @blur="handleDepartBlur"
                 class="el-autocomplete"
                 v-model="form.departCity"
                 ></el-autocomplete>
@@ -37,6 +38,7 @@
                 :fetch-suggestions="queryDestSearch"
                 placeholder="请搜索到达城市"
                 @select="handleDestSelect"
+                @blur="handleDestBlur"
                 class="el-autocomplete"
                 v-model="form.destCity"
                 ></el-autocomplete>
@@ -85,7 +87,9 @@ export default {
                 destCity: "", //目标城市
                 destCode: "", //目标城市代码
                 departDate: "" //出发日期
-            }
+            },
+            departDate: [], //存储后台返回的出发城市数组
+            destData: [] //存储后台返回的到达城市数组
         }
     },
     methods: {
@@ -96,6 +100,18 @@ export default {
             }
         },
         
+        // 出发城市输入框失去焦点时触发 
+        handleDepartBlur() {
+          this.form.departCity = this.departDate[0] ? this.departDate[0].value : '';
+          this.form.departCode = this.departDate[0] ? this.departDate[0].sort : '';
+        },
+
+        // 到达城市输入框失去焦点时触发 
+        handleDestBlur() {
+          this.form.destCity = this.destData[0] ? this.destData[0].value : '';
+          this.form.destCode = this.destData[0] ? this.destData[0].sort : '';
+        },
+
         // 出发城市的搜索建议的事件
         // value是输入框的值
         // cb是一个回调函数必须要调用，参数的值会显示在下拉框中
@@ -126,8 +142,10 @@ export default {
               newDate.push(v)
             })
             // 默认选中第一个
-            this.form.departCity = newDate[0].value
-            this.form.departCode = newDate[0].sort
+            // this.form.departCity = newDate[0].value
+            // this.form.departCode = newDate[0].sort
+            // 把转换后的数组赋值给data
+            this.departDate = newDate
 
             // 显示到下拉列表中
             cb(newDate)
@@ -161,8 +179,10 @@ export default {
               newDate.push(v)
             })
             // 默认选中第一个
-            this.form.destCity = newDate[0].value
-            this.form.destCode = newDate[0].sort
+            // this.form.destCity = newDate[0].value
+            // this.form.destCode = newDate[0].sort
+            // 把转换后的数组赋值给data
+            this.destData = newDate
 
             // 显示到下拉列表中
             cb(newDate)
