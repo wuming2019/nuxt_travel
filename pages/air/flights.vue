@@ -5,16 +5,16 @@
       <!-- 顶部过滤列表 -->
       <div class="flights-content">
         <!-- 过滤条件 -->
-        <div></div>
+        <FlightsFilters :data="flightsData"/>
 
         <!-- 航班头部布局 -->
-        <FlightsListHead />
+        <FlightsListHead/>
 
         <!-- 航班信息 -->
         <div>
           <FlightsItem
           v-for="(item,index) in dataList"
-          :key="index"
+          :key="item.id"
           :data="item">
           </FlightsItem>
           <!-- 分页 -->
@@ -47,12 +47,16 @@
 <script>
 import FlightsListHead from '@/components/air/flightsListHead.vue'
 import FlightsItem from '@/components/air/flightsItem.vue'
+import FlightsFilters from '@/components/air/flightsFilters.vue'
 
 export default {
   data () {
     return {
           // 机票列表返回的总数据，总数据包含4个属性，flights/info/options/tatol
-          flightsData: {},
+          flightsData: {
+            info: {},
+            options: {}
+          },
           // 当前显示的列表数组 
           dataList: {},
           pageIndex:1, // 当前的页码
@@ -63,7 +67,8 @@ export default {
 
   components: {
     FlightsListHead,
-    FlightsItem
+    FlightsItem,
+    FlightsFilters
   },
 
   mounted () {
