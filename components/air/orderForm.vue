@@ -1,7 +1,7 @@
 <template>
     <div class="main">
         <div class="air-column">
-            <h2>剩机人</h2>
+            <h2>乘机人</h2>
             <el-form class="member-info">
                 <div 
 				class="member-info-item" 
@@ -81,6 +81,9 @@
                 <el-button type="warning" class="submit" @click="handleSubmit">提交订单</el-button>
             </div>
         </div>
+
+        <!-- 模板中英语总价格触发计算 -->
+        <span v-show="false">{{allPrice}}</span>
     </div>
 </template>
 
@@ -104,7 +107,35 @@ export default {
 			seat_xid: '', //座位id，来自url的参数
 			air: '' //航班id，来自url的id
 		}
-	},
+    },
+    
+    computed: {
+        //总价格
+        allPrice(){
+            // 如果请求未完成，暂时不需要计算，返回0
+            if(!this.infoData.seat_infos){
+                return 0
+            }
+
+            let price = 0
+
+            // 机票单机，取座位信息的第一个价格
+            price += this.infoData.seat_infos.org_settle_price
+
+            // 燃油费
+            price += this.infoData.airport_tax_audlet
+
+            // 保险数据
+            price += 30 * this.insurances.length
+
+            price *= this.users.length
+
+            // 把值存到store
+            this.$store.commit("air/setAllPirce", price)
+
+            return price
+        }  
+    },
 
 	mounted () {
 		const {id,seat_xid}	= this.$route.query
@@ -117,7 +148,10 @@ export default {
 			}
 		}).then(res => {
 			// 保存机票的数据
-			this.infoData = res.data
+            this.infoData = res.data
+            
+            // 调用store的方法，把infoData存到store中
+            this.$storestore.commit('air/setInfoData', this.infoData)
 		})
 	},
     methods: {
