@@ -46,7 +46,7 @@
 import FlightsListHead from '@/components/air/flightsListHead.vue'
 import FlightsItem from '@/components/air/flightsItem.vue'
 import FlightsFilters from '@/components/air/flightsFilters.vue'
-import FlightsAside from "@/components/air/flightsAside.vue"
+import FlightsAside from '@/components/air/flightsAside.vue'
 
 export default {
   data () {
@@ -106,6 +106,7 @@ export default {
     //   // 第一页的值
     //   this.dataList = this.flightsData.flights.slice(0,this.pageSize)
     // })
+    this.getData()
   },
 
   methods: {

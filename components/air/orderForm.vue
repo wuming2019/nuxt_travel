@@ -63,11 +63,11 @@
             <div class="contact">
                 <el-form label-width="60px">
                     <el-form-item label="姓名">
-                        <el-input></el-input>
+                        <el-input v-model="contactName"></el-input>
                     </el-form-item>
 
                     <el-form-item label="手机">
-                        <el-input placeholder="请输入内容">
+                        <el-input placeholder="请输入内容" v-model="contactPhone">
                             <template slot="append">
                             <el-button @click="handleSendCaptcha">发送验证码</el-button>
                             </template>
@@ -75,7 +75,7 @@
                     </el-form-item>
 
                     <el-form-item label="验证码">
-                        <el-input></el-input>
+                        <el-input v-model="captcha"></el-input>
                     </el-form-item>
                 </el-form>   
                 <el-button type="warning" class="submit" @click="handleSubmit">提交订单</el-button>
@@ -95,7 +95,14 @@ export default {
 			// 机票的数据
 			infoData: {},
 			// 保险数据id
-			insurances: []
+			insurances: [],
+
+			contactName: '', //联系人名字
+			contactPhone: '', //联系人电话
+			captcha: '', //验证码
+			invoice: false, //发票字段
+			seat_xid: '', //座位id，来自url的参数
+			air: '' //航班id，来自url的id
 		}
 	},
 
@@ -143,17 +150,85 @@ export default {
 				this.insurances.push(id)
 			}
 
-			console.log(this.insurances)
+			// console.log(this.insurances)
 		},
         
-        // 发送手机验证码
+        // 发送手机验证码，复制registerForm表单的功能
         handleSendCaptcha(){
-            
+			// 如果手机号码为空，则不请求
+			if(!this.contactPhone){
+				this.$message.error('请输入手机号码')
+				return
+			}
+
+			// 发送验证码
+			this.$axios({
+				url: 'captchas',
+				method: 'POST',
+				data: {
+					tel: this.contactPhone //手机号码
+				}
+			}).then(res => {
+				// 解构出code属性
+				const {code} = res.data
+
+				this.$alert(`模拟手机验证码是: ${code}`,'提示')
+			})
         },
 
         // 提交订单
         handleSubmit(){
-            console.log(this.users)
+			console.log(this.users)
+			// 提交给后台接口的字段
+			const data = {
+			    users: this.users,
+			    insurances: this.insurances,
+			    contactName: this.contactName,
+			    contactPhone: this.contactPhone,
+			    invoice: this.invoice,
+			    captcha: this.captcha,
+			    seat_xid: this.$route.query.seat_xid,
+			    air: this.$route.query.id
+			}
+			// console.log(data)
+
+			// 判断乘机人
+			if(!this.users[0].username || !this.users[0].id){
+				this.$message.error('乘机人不能为空')
+				return
+			}
+
+			// 判断联系人
+			if(!this.contactName){
+				this.$message.error('联系人不能为空')
+				return
+			}
+
+			// 判断手机号码
+			if(!this.contactPhone){
+				this.$message.error('手机号码不能为空')
+				return
+			}
+
+			// 判断验证码
+			if(!this.captcha){
+				this.$message.error('验证码不能为空')
+				return
+			}
+
+			// 提交
+			this.$axios({
+				url: '/airorders',
+				method: 'POST',
+				// 直接这样提交会报错，显示没有token值
+				// 可以给接口单独加上请求头
+				headers: {
+                    Authorization: `Bearer ${this.$store.state.user.userInfo.token}`
+				},
+				data
+			}).then(res => {
+				console.log(res)
+			})
         }
     }
 }
