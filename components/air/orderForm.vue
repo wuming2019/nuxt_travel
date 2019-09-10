@@ -45,10 +45,14 @@
         <div class="air-column">
             <h2>保险</h2>
             <div>
-                <div class="insurance-item">
+                <div 
+				class="insurance-item"
+				v-for="(item,index) in infoData.insurances"
+				:key="index">
                     <el-checkbox 
-                    label="航空意外险：￥30/份×1  最高赔付260万" 
-                    border>
+                    :label="`${item.type}：￥${item.price}/份×1  最高赔付${item.compensation}`" 
+                    border
+					@change="handleChange(item.id)">
                     </el-checkbox> 
                 </div>
             </div>
@@ -87,8 +91,27 @@ export default {
 			users: [{
 				username: '',
 				id: ''
-			}]
+			}],
+			// 机票的数据
+			infoData: {},
+			// 保险数据id
+			insurances: []
 		}
+	},
+
+	mounted () {
+		const {id,seat_xid}	= this.$route.query
+
+		// 请求机票数据
+		this.$axios({
+			url: '/airs/' + id,
+			params: {
+				seat_xid
+			}
+		}).then(res => {
+			// 保存机票的数据
+			this.infoData = res.data
+		})
 	},
     methods: {
         // 添加乘机人
@@ -105,7 +128,23 @@ export default {
 			// 把user的某一项移除掉
 			// 用数组的splice方法，slice方法这是截取，创建新的数组
 			this.users.splice(index,1)
-        },
+		},
+		
+		// 选中保险是触发
+		handleChange(){
+			// 先判断数组中是否已经包含该id
+			const index = this.insurances.indexOf(id)
+
+			// 如果包含了应该删除
+			if(index !== -1){
+				this.insurances.splice(index,1)
+			}else{
+				// 添加id到数组
+				this.insurances.push(id)
+			}
+
+			console.log(this.insurances)
+		},
         
         // 发送手机验证码
         handleSendCaptcha(){
