@@ -57,8 +57,11 @@ export default {
                   // 如何调用mutation下的setUserInfo方
                   // commit接受两个参数，第一个是方法名，第二个是参数数据
                   this.$store.commit('user/setUserInfo',res.data)
-                  this.$message('登陆成功，正在跳转')
-                  this.$router.push('/')
+
+                  // 返回上一页
+                  this.$router.back()
+                  // this.$message('登陆成功，正在跳转')
+                  // this.$router.push('/')
                 })
               }else{
                 console.log('验证失败')

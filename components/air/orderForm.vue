@@ -82,7 +82,7 @@
             </div>
         </div>
 
-        <!-- 模板中英语总价格触发计算 -->
+        <!-- 模板中用于总价格触发计算 -->
         <span v-show="false">{{allPrice}}</span>
     </div>
 </template>
@@ -151,7 +151,7 @@ export default {
             this.infoData = res.data
             
             // 调用store的方法，把infoData存到store中
-            this.$storestore.commit('air/setInfoData', this.infoData)
+            this.$store.commit('air/setInfoData', this.infoData)
 		})
 	},
     methods: {
@@ -172,7 +172,7 @@ export default {
 		},
 		
 		// 选中保险是触发
-		handleChange(){
+		handleChange(id){
 			// 先判断数组中是否已经包含该id
 			const index = this.insurances.indexOf(id)
 
@@ -261,7 +261,16 @@ export default {
 				},
 				data
 			}).then(res => {
-				console.log(res)
+                // console.log(res)
+                // 订单id
+                const {id} = res.data.data
+
+                this.$router.push({
+                    path: "/air/pay",
+                    query: {
+                        id
+                    }
+                })
 			})
         }
     }
