@@ -32,7 +32,9 @@ export default {
     data () {
         return {
             // 订单详情
-            infoData: {}
+            infoData: {},
+            // 定时器的变量 
+            timer: null
         }
     },
     mounted(){
@@ -49,6 +51,7 @@ export default {
                 },
             }).then(res => {
                 // console.log(res)
+                // 赋值到data
                 this.infoData = res.data
 
                 // 获取到canvas节点元素
@@ -59,9 +62,51 @@ export default {
                 QRCode.toCanvas(canvas, code_url, {
                     width: 200
                 });
+                // 轮询，每隔3秒钟就查询
+                this.timer = setInterval(()=>{
+                    this.checkPay()
+                },3000)
             })
         }, 10);
-    }
+    },
+
+    // 组件卸载时触发
+    destroyed () {
+        //清除定时器
+        clearInterval(this.timer)
+        this.timer = null
+    },
+
+    methods: {
+        checkPay(){
+            // 检查付款状态
+            this.$axios({
+                url: '/airorders/checkpay',
+                methods: 'POST',
+                data: {
+                    id: this.$route.query.id,
+                    nonce_str: this.order.price,
+                    out_trade_no: this.order.orderNo	
+                },
+
+                // 可以给接口单独加上请求头
+                headers: {
+                    Authorization: `Bearer ${this.$store.state.user.userInfo.token}`
+                },
+            }).then(res => {
+                const {statusTxt} = res.data
+
+                if(statusTxt === '支付完成'){
+                    // 清除定时器
+                    clearInterval(this.timer)
+                    this.timer = null
+
+                    // 提示用户支付成功
+                    this.$alert('支付成功','提示')
+                }
+            })
+        }
+    },
 }
 </script>
 
